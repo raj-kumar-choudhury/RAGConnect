@@ -79,12 +79,16 @@ class RAGFlowClient:
             files = {
                 "file": (path.name, document),
             }
+            data = {
+                "display_name": path.name,
+            }
 
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     url,
                     headers=self._auth_headers(),
                     files=files,
+                    data=data,
                     timeout=60.0,
                 )
 
