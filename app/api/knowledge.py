@@ -25,11 +25,11 @@ async def ingest_document(
         content=request.content,
     )
 
-    document = (upload_result.get("data") or {}).get("docs", [])
-    if not document:
+    documents = upload_result.get("data") or []
+    if not isinstance(documents, list) or not documents:
         raise ValueError("RAGFlow did not return an uploaded document")
 
-    document_id = document[0].get("id")
+    document_id = documents[0].get("id")
     if not document_id:
         raise ValueError("RAGFlow did not return a document ID")
 
