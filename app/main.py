@@ -1,9 +1,12 @@
 from fastapi import FastAPI
 
+from app.core.config import settings
+
+
 app = FastAPI(
-    title="RAGConnect",
+    title=settings.app_name,
     description="RAG API layer for integrating applications with RAGFlow",
-    version="0.1.0",
+    version=settings.app_version,
 )
 
 
@@ -11,6 +14,6 @@ app = FastAPI(
 async def health_check():
     return {
         "status": "ok",
-        "service": "RAGConnect",
-        "version": "0.1.0",
+        "service": settings.app_name,
+        "version": settings.app_version,
     }
