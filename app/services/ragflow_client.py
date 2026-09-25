@@ -96,6 +96,44 @@ class RAGFlowClient:
         response.raise_for_status()
         return response.json()
 
+    async def upload_text_document(
+        self,
+        dataset_id: str,
+        title: str,
+        content: str,
+    ) -> dict:
+        """Upload plain text content as a Markdown document to RAGFlow."""
+
+        if not title.strip():
+            raise ValueError("Document title is required")
+
+        if not content.strip():
+            raise ValueError("Document content is required")
+
+        filename = f"{title.strip()}.md"
+        document_content = content.encode("utf-8")
+
+        url = f"{self.base_url}/api/v1/datasets/{dataset_id}/documents"
+
+        files = {
+            "file": (filename, document_content, "text/markdown; charset=utf-8"),
+        }
+        data = {
+            "display_name": filename,
+        }
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers=self._auth_headers(),
+                files=files,
+                data=data,
+                timeout=60.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
+
     async def list_documents(self, dataset_id: str) -> dict:
         """Return documents and their current processing status."""
 
