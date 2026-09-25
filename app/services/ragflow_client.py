@@ -34,3 +34,19 @@ class RAGFlowClient:
 
         response.raise_for_status()
         return response.json()
+
+    async def create_dataset(self, name: str) -> dict:
+        """Create a dataset in RAGFlow."""
+
+        url = f"{self.base_url}/api/v1/datasets"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers=self._headers(),
+                json={"name": name},
+                timeout=30.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
