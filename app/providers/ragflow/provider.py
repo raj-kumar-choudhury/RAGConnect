@@ -1,6 +1,7 @@
 from typing import Any
 
 from app.core.config import settings
+from app.models.response import RAGResponse, RAGSource
 from app.providers.base import RAGProvider
 from app.services.ragflow_client import RAGFlowClient
 
@@ -56,16 +57,31 @@ class RAGFlowProvider(RAGProvider):
         question: str,
         session_id: str | None = None,
         metadata: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Query RAGFlow."""
+    ) -> RAGResponse:
+        """Query RAGFlow and return a provider-independent response."""
 
         result = await self.client.chat(
             question=question,
             session_id=session_id,
         )
 
-        return {
-            "provider": "ragflow",
-            "result": result,
-            "metadata": metadata or {},
-        }
+        data = result.get("data") or {}
+        answer = data.get("answer", "")
+        reference = data.get("reference") or {}
+
+        sources = [
+            RAGSource(
+                document=chunk.get("document_name", ""),
+                similarity=chunk.get("similarity"),
+                vector_similarity=chunk.get("vector_similarity"),
+                term_similarity=chunk.get("term_similarity"),
+            )
+            for chunk in reference.get("chunks", [])
+            if chunk.get("document_name")
+        ]
+
+        return RAGResponse(
+            answer=answer,
+            sources=sources,
+            session_id=session_id,
+        )
