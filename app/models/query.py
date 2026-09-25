@@ -8,6 +8,8 @@ class QueryRequest(BaseModel):
 class QuerySource(BaseModel):
     document: str
     similarity: float | None = None
+    vector_similarity: float | None = None
+    term_similarity: float | None = None
 
 
 class QueryResponse(BaseModel):
