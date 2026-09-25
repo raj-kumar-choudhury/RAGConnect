@@ -1,14 +1,16 @@
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
 class KnowledgeDocumentRequest(BaseModel):
-    title: str = Field(..., min_length=1)
+    name: str = Field(..., min_length=1)
     content: str = Field(..., min_length=1)
-    dataset_id: str = Field(..., min_length=1)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class KnowledgeDocumentResponse(BaseModel):
-    dataset_id: str
     document_id: str
-    title: str
+    name: str
     status: str
+    metadata: dict[str, Any] = Field(default_factory=dict)

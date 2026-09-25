@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     ragflow_base_url: str = "http://localhost:9380"
     ragflow_api_key: str = ""
     ragflow_chat_id: str = ""
+    ragflow_dataset_id: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

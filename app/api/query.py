@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.models.query import QueryRequest, QueryResponse, QuerySource
-from app.services.ragflow_client import RAGFlowClient
+from app.providers.factory import get_provider
 
 
 router = APIRouter(prefix="/api/v1", tags=["query"])
@@ -9,12 +9,15 @@ router = APIRouter(prefix="/api/v1", tags=["query"])
 
 @router.post("/query", response_model=QueryResponse)
 async def query(request: QueryRequest) -> QueryResponse:
-    """Query the configured RAGFlow chat assistant."""
+    """Query the configured RAG provider."""
 
-    client = RAGFlowClient()
-    result = await client.chat(request.question)
+    provider = get_provider()
 
-    data = result.get("data") or {}
+    result = await provider.query(
+        question=request.question,
+    )
+
+    data = result.get("result", {}).get("data") or {}
     answer = data.get("answer", "")
     reference = data.get("reference") or {}
 
