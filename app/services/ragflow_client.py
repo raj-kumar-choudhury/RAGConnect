@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import httpx
 
 from app.core.config import settings
@@ -14,6 +16,14 @@ class RAGFlowClient:
         headers = {
             "Content-Type": "application/json",
         }
+
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        return headers
+
+    def _auth_headers(self) -> dict[str, str]:
+        headers = {}
 
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
@@ -47,6 +57,36 @@ class RAGFlowClient:
                 json={"name": name},
                 timeout=30.0,
             )
+
+        response.raise_for_status()
+        return response.json()
+
+    async def upload_document(
+        self,
+        dataset_id: str,
+        file_path: str | Path,
+    ) -> dict:
+        """Upload a document to a RAGFlow dataset."""
+
+        path = Path(file_path)
+
+        if not path.is_file():
+            raise FileNotFoundError(f"Document not found: {path}")
+
+        url = f"{self.base_url}/api/v1/datasets/{dataset_id}/documents"
+
+        with path.open("rb") as document:
+            files = {
+                "file": (path.name, document),
+            }
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    url,
+                    headers=self._auth_headers(),
+                    files=files,
+                    timeout=60.0,
+                )
 
         response.raise_for_status()
         return response.json()
