@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api.knowledge import router as knowledge_router
 from app.api.query import router as query_router
 from app.core.config import settings
 
@@ -12,6 +13,7 @@ app = FastAPI(
 
 
 app.include_router(query_router)
+app.include_router(knowledge_router)
 
 
 @app.get("/health")
