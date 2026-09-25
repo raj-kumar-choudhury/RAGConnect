@@ -11,6 +11,7 @@ class RAGFlowClient:
     def __init__(self) -> None:
         self.base_url = settings.ragflow_base_url.rstrip("/")
         self.api_key = settings.ragflow_api_key
+        self.chat_id = settings.ragflow_chat_id
 
     def _headers(self) -> dict[str, str]:
         headers = {
@@ -135,13 +136,15 @@ class RAGFlowClient:
 
     async def chat(
         self,
-        chat_id: str,
         question: str,
         session_id: str | None = None,
     ) -> dict:
-        """Send a question to a RAGFlow chat assistant."""
+        """Send a question to the configured RAGFlow chat assistant."""
 
-        url = f"{self.base_url}/api/v1/chats/{chat_id}/completions"
+        if not self.chat_id:
+            raise ValueError("RAGFLOW_CHAT_ID is not configured")
+
+        url = f"{self.base_url}/api/v1/chats/{self.chat_id}/completions"
 
         payload = {
             "question": question,
