@@ -5,6 +5,8 @@ class Settings(BaseSettings):
     app_name: str = "RAGConnect"
     app_version: str = "0.1.0"
 
+    rag_provider: str = "ragflow"
+
     ragflow_base_url: str = "http://localhost:9380"
     ragflow_api_key: str = ""
     ragflow_chat_id: str = ""
