@@ -132,3 +132,32 @@ class RAGFlowClient:
 
         response.raise_for_status()
         return response.json()
+
+    async def chat(
+        self,
+        chat_id: str,
+        question: str,
+        session_id: str | None = None,
+    ) -> dict:
+        """Send a question to a RAGFlow chat assistant."""
+
+        url = f"{self.base_url}/api/v1/chats/{chat_id}/completions"
+
+        payload = {
+            "question": question,
+            "stream": False,
+        }
+
+        if session_id:
+            payload["session_id"] = session_id
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers=self._headers(),
+                json=payload,
+                timeout=300.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
