@@ -19,3 +19,18 @@ class RAGFlowClient:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         return headers
+
+    async def list_datasets(self) -> dict:
+        """Return datasets available to the configured RAGFlow user."""
+
+        url = f"{self.base_url}/api/v1/datasets"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers=self._headers(),
+                timeout=30.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
