@@ -94,3 +94,41 @@ class RAGFlowClient:
 
         response.raise_for_status()
         return response.json()
+
+    async def list_documents(self, dataset_id: str) -> dict:
+        """Return documents and their current processing status."""
+
+        url = f"{self.base_url}/api/v1/datasets/{dataset_id}/documents"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                url,
+                headers=self._headers(),
+                timeout=30.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
+
+    async def parse_documents(
+        self,
+        dataset_id: str,
+        document_ids: list[str],
+    ) -> dict:
+        """Start parsing/chunking for documents in a RAGFlow dataset."""
+
+        if not document_ids:
+            raise ValueError("At least one document ID is required")
+
+        url = f"{self.base_url}/api/v1/datasets/{dataset_id}/chunks"
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers=self._headers(),
+                json={"document_ids": document_ids},
+                timeout=30.0,
+            )
+
+        response.raise_for_status()
+        return response.json()
