@@ -22,6 +22,8 @@ async def query(request: QueryRequest) -> QueryResponse:
         QuerySource(
             document=chunk.get("document_name", ""),
             similarity=chunk.get("similarity"),
+            vector_similarity=chunk.get("vector_similarity"),
+            term_similarity=chunk.get("term_similarity"),
         )
         for chunk in reference.get("chunks", [])
         if chunk.get("document_name")
